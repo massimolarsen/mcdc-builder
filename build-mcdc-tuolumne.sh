@@ -92,6 +92,14 @@ cat >> "$VENV_PATH/bin/activate" <<EOF
 
 # Load the Cray MPI runtime and compiler wrappers used by this environment.
 module load "$MPI_MODULE" || return 1
+
+# Expose Cray runtime libraries required by mpi4py.
+if [ -n "\${CRAY_LD_LIBRARY_PATH:-}" ]; then
+    case "\${LD_LIBRARY_PATH:-}" in
+        "\$CRAY_LD_LIBRARY_PATH"|"\$CRAY_LD_LIBRARY_PATH":*) ;;
+        *) export LD_LIBRARY_PATH="\$CRAY_LD_LIBRARY_PATH\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}" ;;
+    esac
+fi
 EOF
 
 # Activate the environment before installing packages.
